@@ -28,7 +28,7 @@ export const Sidebar = function () {
     };
 
     return (
-        <div className={`h-screen ${openPanel ? 'w-60' : 'w-16'} bg-gray-900 text-white flex flex-col justify-between p-3 shadow-xl transition-all duration-300` }>
+        <div className={`h-screen ${openPanel ? 'w-60' : 'w-16'} bg-gray-800 text-white flex flex-col justify-between p-3 shadow-xl transition-all duration-300` }>
             {/* Top Section */}
             <div className="space-y-4">
                 <button className="w-full h-12 flex items-center justify-center rounded-lg hover:bg-gray-700" onClick={() => setOpenPanel(!openPanel)}>
