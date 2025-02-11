@@ -85,12 +85,14 @@ export const FirebaseContextProvider = function({children}) {
         }
       };
 
-     const getCurrentUser = async function() {
-        const userRef = doc(db, "users", user?.uid);
+      const getCurrentUser = async function() {
+        if (!user) return null;  // Return null if user is not defined
+      
+        const userRef = doc(db, "users", user.uid);
         const response = await getDoc(userRef);
-        console.log("current User =>",response.data())
         return response?.data();
-     };
+      };
+      
 
      const savePrompts = async function (prompt) {
         if (!prompt) {
@@ -114,21 +116,23 @@ export const FirebaseContextProvider = function({children}) {
       };
 
       const getPrompts = async function () {
+        if (!user?.uid) return [];  // Return an empty array if user.uid is undefined
+      
         try {
-            const promptRef = collection(db,"Prompts");
-            const qry = query(promptRef, where("userId", "==", user?.uid));
-            const getPrompt = await getDocs(qry)
-            const prompt = getPrompt.docs.map((doc) => ({
-                id: doc.id,      // Include the document ID
-                ...doc.data()    // Spread the document data
-            }));
-            // console.log(prompt)
-            return prompt;
+          const promptRef = collection(db, "Prompts");
+          const qry = query(promptRef, where("userId", "==", user.uid));
+          const getPrompt = await getDocs(qry);
+          const prompt = getPrompt.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          return prompt;
         } catch (error) {
-          console.error("Error Getting prompt:", error);
+          console.error("Error getting prompt:", error);
           throw error;
         }
       };
+      
       
     return (
         <FirebaseContext.Provider value={{signUp, signIn, signinWithGoogle, isLoggedIn, user, logout, getCurrentUser, savePrompts, getPrompts }}>

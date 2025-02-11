@@ -10,11 +10,11 @@ export const Navbar = function () {
 
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async function () {
+    await logout();
     setShowDropdown(false);
   };
-
+    
   return (
     <div className="flex items-center justify-between p-4 w-full">
       <div className="flex flex-col hover:bg-gray-800 cursor-pointer rounded-lg p-2">

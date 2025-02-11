@@ -32,13 +32,14 @@ export const Main = function () {
   console.log('info =>', user);
 
   useEffect(() => {
-
+    
     const getUser = async function () {
+    if (!user) return;  // Skip if user is not logged in
     const response = await getCurrentUser();
     setUserDetails(response)
     }
     getUser();
-  },[getCurrentUser]);
+  },[getCurrentUser, user]);
 
   // Handles the prompt submission
   const handleSent = async function (input) {
