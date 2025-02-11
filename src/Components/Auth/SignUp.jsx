@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useFirebase } from "../../hooks/useFirebase";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export const SignUp = function () {
 
@@ -123,7 +123,12 @@ export const SignUp = function () {
             User created successfully! Redirecting to sign-in page...
             </div>
         )}
-        
+        <p className="text-center text-gray-600 mt-4">
+              Already have an account?{" "}
+              <Link to="/signin" className="text-blue-600 hover:underline">
+                Sign In
+              </Link>
+            </p>
       </form>
     </div>
   );

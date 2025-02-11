@@ -1,13 +1,18 @@
+import { useState } from "react";
 import { Image, Mic, Send, User } from "lucide-react";
 //import { Cards } from "../Cards/Cards";
 import { Navbar } from "../Navbar/Navbar";
 import { Sidebar } from "../SideBar/Sidebar";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { assets } from "../../assets/assets";
 import GeminiContext from "../../Context/Context";
+import { useFirebase } from "../../hooks/useFirebase";
 
 // Main component responsible for the primary UI layout
 export const Main = function () {
+
+  const [userDetails, setUserDetails] = useState(null);
+
   const {
     input,
     setInput,
@@ -22,6 +27,18 @@ export const Main = function () {
     resultData,
     setResultData
   } = useContext(GeminiContext);
+
+  const {getCurrentUser, user} = useFirebase();
+  console.log('info =>', user);
+
+  useEffect(() => {
+
+    const getUser = async function () {
+    const response = await getCurrentUser();
+    setUserDetails(response)
+    }
+    getUser();
+  },[getCurrentUser]);
 
   // Handles the prompt submission
   const handleSent = async function (input) {
@@ -56,7 +73,7 @@ export const Main = function () {
             <>
               <div className="text-center text-gray-700 text-5xl font-bold">
                 <h1 className="bg-gradient-to-r from-blue-500 via-red-500 to-purple-500 text-transparent bg-clip-text">
-                  Hello, User
+                Hello, {userDetails?.name || user?.displayName || "User"}
                 </h1>
               </div>
               {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
