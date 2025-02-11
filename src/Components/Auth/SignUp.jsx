@@ -120,7 +120,7 @@ export const SignUp = function () {
         {/* User Created Feedback */}
         {userCreated && (
             <div className="mt-4 p-2 bg-green-100 border border-green-400 text-green-700 rounded">
-            User created successfully! Redirecting to sign-in page...
+            User created successfully! Redirecting to Gemini
             </div>
         )}
         <p className="text-center text-gray-600 mt-4">

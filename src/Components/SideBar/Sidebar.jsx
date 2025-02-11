@@ -1,11 +1,42 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { FileQuestion, History, Menu, MessageSquare, Plus, Settings } from 'lucide-react';
 import GeminiContext from '../../Context/Context';
+import { useFirebase } from '../../hooks/useFirebase';
 
 export const Sidebar = function () {
     const [openPanel, setOpenPanel] = useState(false);
 
     const {onSent, prevPrompt, setRecentPrompt, setLoading, setShowResult, setResultData} = useContext(GeminiContext);
+
+    const {savePrompts, getPrompts, user} = useFirebase();
+
+    const [fetchPrompt, setFetchPrompt] = useState([]);
+
+    useEffect(() => {
+        const saveValidPrompt = async () => {
+          if (prevPrompt && prevPrompt.length > 0) {  // Ensure prevPrompt exists and is not empty
+            try {
+              await savePrompts(prevPrompt);
+            } catch (error) {
+              console.error("Error saving prompt:", error);
+            }
+          }
+        };
+      
+        saveValidPrompt();
+      }, [prevPrompt, savePrompts]);
+
+      useEffect(() => {
+        const getPrompt = async function () {
+        const prompt = await getPrompts();
+        const response = prompt.map((el) => {
+           return el?.prmptName
+        });
+        setFetchPrompt(response)
+        }
+        getPrompt()
+      },[getPrompts]);
+      
 
     const loadPrompt = async function (prompt) {
         try {
@@ -43,22 +74,33 @@ export const Sidebar = function () {
                 </div>
                 
                 {openPanel && (
-                    <div>
-                        <p className='text-gray-400 text-xs uppercase px-3'>Recent</p>
+                 <div>
+                    <p className='text-gray-400 text-xs uppercase px-3'>Recent</p>
 
-                        {prevPrompt.map((item, index) => {
-                            return (
-                                <div key={index}
-                                 className='flex items-center space-x-3 p-3 hover:bg-gray-700 rounded-lg cursor-pointer'
-                                 onClick={()=>loadPrompt(item)}
-                                 >
-                                <MessageSquare size={24} />
-                                <p className="text-sm">{item}...</p>
-                             </div>
-                          )
-                        })} 
-
-                    </div>
+                    {user && fetchPrompt.length > 0 ? (
+                    fetchPrompt.map((item, index) => (
+                        <div
+                        key={index}
+                        className='flex items-center space-x-3 p-3 hover:bg-gray-700 rounded-lg cursor-pointer'
+                        onClick={() => loadPrompt(item)}
+                        >
+                        <MessageSquare size={24} />
+                        <p className="text-sm">{item}...</p>
+                        </div>
+                    ))
+                    ) : (
+                    prevPrompt.map((item, index) => (
+                        <div
+                        key={index}
+                        className='flex items-center space-x-3 p-3 hover:bg-gray-700 rounded-lg cursor-pointer'
+                        onClick={() => loadPrompt(item)}
+                        >
+                        <MessageSquare size={24} />
+                        <p className="text-sm">{item}...</p>
+                        </div>
+                    ))
+                    )}
+                </div>
                 )}
             </div>
 

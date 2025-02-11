@@ -8,10 +8,10 @@ import { FirebaseContextProvider } from './Context/FirebaseContext.jsx'
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
-    <FirebaseContextProvider>
-      <GeminiContextProvider>
-          <App />
-      </GeminiContextProvider>
-    </FirebaseContextProvider>
+    <GeminiContextProvider>
+      <FirebaseContextProvider>
+            <App />
+      </FirebaseContextProvider>
+    </GeminiContextProvider>
   </BrowserRouter>
 )

@@ -1,9 +1,10 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
-import { createContext,  useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
 import { auth, db } from "../Config/firebaseConfig";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, addDoc, collection, getDocs, query, where } from "firebase/firestore";
+
 
 const FirebaseContext = createContext();
 
@@ -88,11 +89,49 @@ export const FirebaseContextProvider = function({children}) {
         const userRef = doc(db, "users", user?.uid);
         const response = await getDoc(userRef);
         console.log("current User =>",response.data())
-        return response.data();
+        return response?.data();
      };
 
+     const savePrompts = async function (prompt) {
+        if (!prompt) {
+          console.log("No prompt provided.");
+          return;
+        }
+      
+        try {
+          const promptRef = await addDoc(collection(db, "Prompts"), {
+            prmptName: prompt,
+            createdAt: new Date().toISOString(),
+            userId: user?.uid || "anonymous"
+          });
+      
+          console.log("Prompt saved with ID:", promptRef.id);
+          return { promptRef, promptId: promptRef.id };  // Return both the reference and the ID
+        } catch (error) {
+          console.error("Error saving prompt:", error);
+          throw error;
+        }
+      };
+
+      const getPrompts = async function () {
+        try {
+            const promptRef = collection(db,"Prompts");
+            const qry = query(promptRef, where("userId", "==", user?.uid));
+            const getPrompt = await getDocs(qry)
+            const prompt = getPrompt.docs.map((doc) => ({
+                id: doc.id,      // Include the document ID
+                ...doc.data()    // Spread the document data
+            }));
+            // console.log(prompt)
+            return prompt;
+        } catch (error) {
+          console.error("Error Getting prompt:", error);
+          throw error;
+        }
+      };
+      
     return (
-        <FirebaseContext.Provider value={{signUp, signIn, signinWithGoogle, isLoggedIn, user, logout, getCurrentUser }}>
+        <FirebaseContext.Provider value={{signUp, signIn, signinWithGoogle, isLoggedIn, user, logout, getCurrentUser, savePrompts, getPrompts }}>
             {children}
         </FirebaseContext.Provider>
     )
